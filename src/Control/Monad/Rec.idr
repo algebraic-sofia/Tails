@@ -61,7 +61,7 @@ MonadRec m => MonadRec (EitherT e m) where
                         Right (Loop r) => Loop r
                         
 public export
-MonadRec m => MonadRec IO where 
+MonadRec IO where 
     tailRecM f arg = do     
             ref <- f arg >>= newIORef
             loopIO $ do 
