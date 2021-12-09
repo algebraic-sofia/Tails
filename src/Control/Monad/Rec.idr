@@ -21,8 +21,8 @@ forever ma = tailRecM (\u => Loop u <$ ma) ()
 
 ||| Loop with maybe to express continuation of the loop
 export
-whileRec : MonadRec m => m (Maybe b) -> m b
-whileRec ma = flip tailRecM () $ \a => maybe (Loop a) Done <$> ma 
+whileRec : MonadRec m => b -> m (Maybe b) -> m b
+whileRec b ma = flip tailRecM b $ \a => maybe (Done a) (Loop) <$> ma 
 
 -----------------------------------------------------------
 -- Implementations for each monad transformer
