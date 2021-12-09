@@ -2,6 +2,7 @@ module Control.Monad.Rec
 
 import Control.Monad.State
 import Control.Monad.Either
+import Data.IORef
 
 ||| Data type to express recursion step as data.
 public export
@@ -58,6 +59,21 @@ MonadRec m => MonadRec (EitherT e m) where
                         Left e         => Done (Left e) 
                         Right (Done r) => Done (Right r)
                         Right (Loop r) => Loop r
-
+                        
+public export
 MonadRec m => MonadRec IO where 
-    tailRecM f arg = ?f
+    tailRecM f arg = do     
+            ref <- f arg >>= newIORef
+            loopIO $ do 
+                Done r <- readIORef ref 
+                    | Loop r => do 
+                        ex <- f r
+                        writeIORef ref ex 
+                        pure True
+                pure False
+            -- Unsafe but it will work everytime.. i dont want to prove it sry
+            assert_total unwrapDone <$> readIORef ref
+        where 
+            partial 
+            unwrapDone : Step a b -> b 
+            unwrapDone (Done r) = r

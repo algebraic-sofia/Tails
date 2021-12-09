@@ -4,5 +4,4 @@ version = 0.0.1
 license = "MIT"
 
 sourcedir = "src"
-executable = "tails"
-main = Main
+modules = Control.Monad.Rec
